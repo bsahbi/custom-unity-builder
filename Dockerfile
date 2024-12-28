@@ -1,12 +1,21 @@
 ARG GAMECI_IMAGE=unityci/editor:ubuntu-2022.3.21f1-android-3.1.0
 FROM $GAMECI_IMAGE
 
-# Install OpenJDK 11
+# Install OpenJDK 17
 RUN apt-get update && apt-get install -y openjdk-17-jdk
 
 # Set JAVA_HOME and update PATH
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+
+# Set Java 17 as the default
+RUN update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java && \
+    update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
+
+# Verify Java 17 installation
+RUN java -version && javac -version
+
 
 # Install Android SDK manager
 RUN apt-get update && apt-get install -y wget unzip && \
