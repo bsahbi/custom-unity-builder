@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y openjdk-17-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
+RUN rm -rf /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/OpenJDK/bin/java
 
 # Set Java 17 as the default
 RUN update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java && \
