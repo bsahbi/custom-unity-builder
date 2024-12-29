@@ -1,0 +1,71 @@
+ARG GAMECI_IMAGE=unityci/editor:ubuntu-2022.3.21f1-android-3.1.0
+FROM $GAMECI_IMAGE
+
+# Install OpenJDK 17
+RUN apt-get update && apt-get install -y openjdk-17-jdk  openjdk-11-jdk
+
+# Set JAVA_HOME and update PATH globally
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH="${JAVA_HOME}/bin:/opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin:${PATH}"
+
+# Add diagnostic check to ensure JAVA_HOME is set correctly
+RUN echo "JAVA_HOME is set to: $JAVA_HOME" && \
+    java -version
+
+# Update alternatives to set Java 11 as default
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-11-openjdk-amd64/bin/java 1 \
+    && update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+
+
+
+# Verify Java 17 installation
+RUN java -version && javac -version
+
+
+# Install Android SDK manager
+RUN apt-get update && apt-get install -y wget unzip && \
+    echo "Downloading Android SDK Command Line Tools (Version 35)..." && \
+    wget "https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip" -O cmdline-tools.zip && \
+    echo "Unzipping Android SDK Command Line Tools..." && \
+    mkdir -p /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest && \
+    mkdir -p /tmp/cmdline-tools && \
+    unzip cmdline-tools.zip -d /tmp && \
+    mv /tmp/cmdline-tools/* /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/ 
+
+# Ensure sdkmanager is executable
+RUN chmod +x /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager
+
+# Verify SDK Manager works properly
+RUN /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager --version
+
+
+ENV ANDROID_HOME=/opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK
+ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
+
+
+
+# Accept licenses and install platform 35
+RUN yes | sdkmanager --licenses && \
+    sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
+
+# Fix permissions to allow Unity to write to the SDK directory
+RUN chmod -R 777 /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK
+
+
+# Install Gradle
+RUN curl -fsSL https://services.gradle.org/distributions/gradle-8.12-all.zip -o gradle-8.12-all.zip && \
+    unzip gradle-8.12-all.zip -d /opt && \
+    ln -s /opt/gradle-8.12/bin/gradle /usr/local/bin/gradle && \
+    rm gradle-8.12-all.zip
+
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> ~/.bashrc && \
+    echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+# Add diagnostic lines to the entrypoint script
+#ENTRYPOINT ["sh", "-c", " export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && java -version && /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager --version"]
+
+

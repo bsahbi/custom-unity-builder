@@ -1,0 +1,41 @@
+# Use the unityci/editor base image, which already includes Unity Editor
+FROM unityci/editor:ubuntu-2022.3.21f1-android-3.1.0
+
+# Set environment variables for Unity version and Android SDK path
+ENV UNITY_VERSION=2022.3.21f1
+ENV ANDROID_SDK_ROOT=/opt/android-sdk-linux
+
+RUN apt-get update && apt-get install -y wget unzip && \
+    wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O sdk-tools.zip && \
+    mkdir -p  /opt/android-sdk-linux/temp-cmdline-tools && \
+    unzip sdk-tools.zip -d /opt/android-sdk-linux/temp-cmdline-tools && \
+    mkdir -p /opt/android-sdk-linux/cmdline-tools/latest && \
+    mv /opt/android-sdk-linux/temp-cmdline-tools/cmdline-tools/* /opt/android-sdk-linux/cmdline-tools/latest && \
+    rm -rf /opt/android-sdk-linux/temp-cmdline-tools && \
+    rm sdk-tools.zip
+
+# Install Gradle
+RUN curl -fsSL https://services.gradle.org/distributions/gradle-7.3.3-all.zip -o gradle-7.3.3-all.zip && \
+    unzip gradle-7.3.3-all.zip -d /opt && \
+    ln -s /opt/gradle-7.3.3/bin/gradle /usr/local/bin/gradle && \
+    rm gradle-7.3.3-all.zip
+
+
+# Set Unity Editor PATH
+ENV PATH=/opt/Unity/Editor:$PATH
+
+# Set the working directory where Unity project will be mounted
+WORKDIR /workspace
+
+# Check Unity executable exists (for debugging)
+RUN ls -alh /opt/unity/Editor/Unity
+
+# Set the entrypoint to run Unity build
+# ENTRYPOINT ["bash", "-c", "/opt/unity/Editor/Unity $@"]  # Forward args to Unity
+# ENTRYPOINT ["bash", "-c",   "/opt/unity/Editor/Unity $@"]            
+# ENTRYPOINT [ "/opt/unity/Editor/Unity"]
+
+# Default CMD (this can be overridden)
+
+# CMD ["-batchmode", "-nographics", "-logFile", "/tmp/unity_log.txt",  "-buildTarget", "Android", "-debug"]
+CMD ["bash"]
