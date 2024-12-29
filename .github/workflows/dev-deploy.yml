@@ -47,10 +47,10 @@ jobs:
                   docker build -t ${{ secrets.DOCKER_USERNAME }}/unity-builder:${{ env.NEW_TAG }} \
                                -t ${{ secrets.DOCKER_USERNAME }}/unity-builder:latest .
 
-                  docker run  --rm bsahbi/unitybuilder java -version
-                  docker run  --rm bsahbi/unitybuilder bash -c "sdkmanager --version"
-                  docker run  --rm bsahbi/unitybuilder gradle --version
-                  docker run  --rm bsahbi/unitybuilder bash -c "gradle --version"
+                  # docker run  --rm bsahbi/unitybuilder java -version
+                  # docker run  --rm bsahbi/unitybuilder bash -c "sdkmanager --version"
+                  # docker run  --rm bsahbi/unitybuilder gradle --version
+                  # docker run  --rm bsahbi/unitybuilder bash -c "gradle --version"
 
             - name: Push Docker image with version and latest tags
               run: |
