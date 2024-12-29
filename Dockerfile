@@ -17,10 +17,6 @@ RUN update-alternatives --install /usr/bin/java /usr/lib/jvm/java-17-openjdk-amd
 
 RUN rm -rf /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/OpenJDK/bin/java
 
-# Set Java 17 as the default
-RUN update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java && \
-    update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
-
 # Verify Java 17 installation
 RUN java -version && javac -version
 
