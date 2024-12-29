@@ -9,8 +9,10 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 
-# Fix potential path issues by adding both Unity's JDK and JDK 17
-RUN ln -s /usr/lib/jvm/java-17-openjdk-amd64/bin/java /usr/bin/java
+# Update alternatives to set Java 17 as default
+RUN update-alternatives --install /usr/bin/java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 1 \
+    && update-alternatives --config java \
+    && update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
 
 
 
