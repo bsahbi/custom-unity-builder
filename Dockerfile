@@ -6,8 +6,11 @@ RUN apt-get update && apt-get install -y openjdk-17-jdk
 
 # Set JAVA_HOME and update PATH globally
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+ENV PATH="${JAVA_HOME}/bin:/opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin:${PATH}"
 
+# Add diagnostic check to ensure JAVA_HOME is set correctly
+RUN echo "JAVA_HOME is set to: $JAVA_HOME" && \
+    java -version
 
 # Update alternatives to set Java 17 as default
 RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-amd64/bin/java 1 \
@@ -56,4 +59,11 @@ RUN curl -fsSL https://services.gradle.org/distributions/gradle-8.12-all.zip -o 
     ln -s /opt/gradle-8.12/bin/gradle /usr/local/bin/gradle && \
     rm gradle-8.12-all.zip
 
+RUN echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> ~/.bashrc && \
+    echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bashrc
 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+# Add diagnostic lines to the entrypoint script
+#ENTRYPOINT ["sh", "-c", " export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && java -version && /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager --version"]
