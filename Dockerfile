@@ -11,7 +11,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 RUN JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
     PATH=$JAVA_HOME/bin:$PATH 
 
-EUN /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager --version
+RUN /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager --version
 
 
 
