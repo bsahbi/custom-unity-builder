@@ -8,6 +8,10 @@ RUN apt-get update && apt-get install -y openjdk-17-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
+# Fix potential path issues by adding both Unity's JDK and JDK 17
+RUN ln -s /usr/lib/jvm/java-17-openjdk-amd64/bin/java /usr/bin/java
+
+
 RUN rm -rf /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/OpenJDK/bin/java
 
 # Set Java 17 as the default
@@ -18,6 +22,7 @@ RUN update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java &
 RUN java -version && javac -version
 
 
+
 # Install Android SDK manager
 RUN apt-get update && apt-get install -y wget unzip && \
     echo "Downloading Android SDK Command Line Tools (Version 35)..." && \
@@ -25,10 +30,15 @@ RUN apt-get update && apt-get install -y wget unzip && \
     echo "Unzipping Android SDK Command Line Tools..." && \
     mkdir -p /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest && \
     mkdir -p /tmp/cmdline-tools && \
-    unzip cmdline-tools.zip -d /tmp/cmdline-tools && \
-    mv /tmp/cmdline-tools/cmdline-tools/* /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/ && \
-    rm -rf /tmp/cmdline-tools && \
-    rm cmdline-tools.zip
+    unzip cmdline-tools.zip -d /tmp && \
+    mv /tmp/cmdline-tools/* /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/ 
+
+# Ensure sdkmanager is executable
+RUN chmod +x /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager
+
+# Verify SDK Manager works properly
+RUN /opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmdline-tools/latest/bin/sdkmanager --version
+
 
 ENV ANDROID_HOME=/opt/unity/Editor/Data/PlaybackEngines/AndroidPlayer/SDK
 ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
