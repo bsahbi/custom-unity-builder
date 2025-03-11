@@ -8,7 +8,6 @@ RUN curl -fsSL https://services.gradle.org/distributions/gradle-8.12-all.zip -o 
     ln -s /opt/gradle-8.12/bin/gradle /usr/local/bin/gradle && \
     rm gradle-8.12-all.zip
 
-RUN mkdir -p /tmp/.X11-unix && chown root:root /tmp/.X11-unix
-RUN mkdir -p /tmp/..X100-lock && chown root:root /tmp/..X100-lock
+RUN mkdir -p /tmp/.X11-unix && chown root:root /tmp/.X11-unix &&  chmod 1777 /tmp/.X11-unix
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
