@@ -15,8 +15,6 @@ RUN curl -L -o /opt/firebase_unity_sdk.zip "https://firebase.google.com/download
 
 RUN ls /opt/firebase_sdk
 
-RUN /opt/unity/Editor/Unity -quit -batchmode -projectPath . -disable-assembly-updater -importPackage Assets/Firebase/FirebaseMessaging.unitypackage
-
 RUN mkdir -p /tmp/.X11-unix && chown root:root /tmp/.X11-unix &&  chmod 1777 /tmp/.X11-unix
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
