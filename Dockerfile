@@ -8,6 +8,15 @@ RUN curl -fsSL https://services.gradle.org/distributions/gradle-8.12-all.zip -o 
     ln -s /opt/gradle-8.12/bin/gradle /usr/local/bin/gradle && \
     rm gradle-8.12-all.zip
 
+# Download Firebase Unity SDK
+RUN curl -L -o /opt/firebase_unity_sdk.zip "https://firebase.google.com/download/unity" && \
+    unzip /opt/firebase_unity_sdk.zip -d /opt/firebase_sdk && \
+    rm /opt/firebase_unity_sdk.zip
+
+RUN ls /opt/firebase_sdk
+
+RUN /opt/unity/Editor/Unity -quit -batchmode -projectPath . -disable-assembly-updater -importPackage Assets/Firebase/FirebaseMessaging.unitypackage
+
 RUN mkdir -p /tmp/.X11-unix && chown root:root /tmp/.X11-unix &&  chmod 1777 /tmp/.X11-unix
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
